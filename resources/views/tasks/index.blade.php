@@ -11,6 +11,37 @@
             </a>
         </div>
 
+        <form method="GET" action="/tasks"
+              style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
+
+            <!-- SEARCH -->
+            <input type="text" name="search"
+                   value="{{ request('search') }}"
+                   placeholder="Search tasks..."
+                   style="padding:8px; border-radius:6px; border:1px solid #ccc;">
+
+            <!-- STATUS -->
+            <select name="status" style="padding:8px; border-radius:6px;">
+                <option value="">All Status</option>
+                <option value="todo" {{ request('status') == 'todo' ? 'selected' : '' }}>To Do</option>
+                <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                <option value="done" {{ request('status') == 'done' ? 'selected' : '' }}>Done</option>
+            </select>
+
+            <!-- PRIORITY -->
+            <select name="priority" style="padding:8px; border-radius:6px;">
+                <option value="">All Priority</option>
+                <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
+                <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
+            </select>
+
+            <button style="background:black; color:white; padding:8px 12px; border-radius:6px;">
+                Search / Filter
+            </button>
+
+        </form>
+
         <!-- TASK LIST -->
         @foreach($tasks as $task)
             <div style="background:white; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
@@ -38,8 +69,8 @@
                     @endif
 
                     <!-- STATUS -->
-                    <span style="margin-left:10px; color:black;">
-                        {{ $task->status }}
+                    <span style="margin-left:10px; color:black; font-weight:bold;">
+                        {{ strtoupper($task->status) }}
                     </span>
 
                 </div>
@@ -49,7 +80,7 @@
 
                     <!-- EDIT -->
                     <a href="/tasks/{{ $task->id }}/edit"
-                       style="background:#f59e0b; color:black; padding:6px 12px; border-radius:6px; font-weight:bold;">
+                       style="background:#f59e0b; color:white; padding:6px 12px; border-radius:6px; font-weight:bold;">
                         Edit
                     </a>
 

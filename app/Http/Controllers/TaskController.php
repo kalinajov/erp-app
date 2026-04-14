@@ -7,9 +7,28 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function index()
+    // ✅ INDEX WITH FILTER + SEARCH
+    public function index(Request $request)
     {
-        $tasks = Task::latest()->get();
+        $query = Task::query();
+
+        // 🔍 SEARCH
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // FILTER STATUS
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // FILTER PRIORITY
+        if ($request->priority) {
+            $query->where('priority', $request->priority);
+        }
+
+        $tasks = $query->latest()->get();
+
         return view('tasks.index', compact('tasks'));
     }
 
@@ -22,7 +41,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'priority' => 'required',
+            'priority' => 'required|in:low,medium,high',
         ]);
 
         $task = new Task();
@@ -32,7 +51,7 @@ class TaskController extends Controller
         $task->priority = $request->priority;
         $task->due_date = $request->due_date;
         $task->estimated_hours = $request->estimated_hours;
-        $task->user_id = auth()->id(); // 👈 ОВА Е КЛУЧНО
+        $task->user_id = auth()->id();
 
         $task->save();
 
@@ -53,6 +72,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'priority' => 'required|in:low,medium,high',
         ]);
 
         $task->title = $request->title;
