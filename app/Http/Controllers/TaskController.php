@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
-// 🔥 ENUMS
+// ENUMS
 use App\Enums\TaskStatus;
 use App\Enums\TaskPriority;
 
 class TaskController extends Controller
 {
-    // INDEX WITH FILTER + SEARCH
+    //  INDEX WITH FILTER + SEARCH + PAGINATION
     public function index(Request $request)
     {
         $query = Task::query();
@@ -31,7 +31,8 @@ class TaskController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        $tasks = $query->latest()->get();
+        // PAGINATION + KEEP FILTERS
+        $tasks = $query->latest()->paginate(5)->withQueryString();
 
         return view('tasks.index', compact('tasks'));
     }

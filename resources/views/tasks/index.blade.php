@@ -11,17 +11,15 @@
             </a>
         </div>
 
-        <!-- 🔍 SEARCH + FILTER -->
+        <!-- SEARCH + FILTER -->
         <form method="GET" action="/tasks"
               style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
 
-            <!-- SEARCH -->
             <input type="text" name="search"
                    value="{{ request('search') }}"
                    placeholder="Search tasks..."
                    style="padding:8px; border-radius:6px; border:1px solid #ccc;">
 
-            <!-- STATUS -->
             <select name="status" style="padding:8px; border-radius:6px;">
                 <option value="">All Status</option>
                 <option value="todo" {{ request('status') == 'todo' ? 'selected' : '' }}>To Do</option>
@@ -29,7 +27,6 @@
                 <option value="done" {{ request('status') == 'done' ? 'selected' : '' }}>Done</option>
             </select>
 
-            <!-- PRIORITY -->
             <select name="priority" style="padding:8px; border-radius:6px;">
                 <option value="">All Priority</option>
                 <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
@@ -43,24 +40,28 @@
 
         </form>
 
+        <!-- EMPTY STATE -->
+        @if($tasks->isEmpty())
+            <div style="background:white; padding:20px; border-radius:10px;">
+                No tasks found.
+            </div>
+        @endif
+
         <!-- TASK LIST -->
         @foreach($tasks as $task)
             <div style="background:white; padding:15px; margin-bottom:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
 
-                <!-- TITLE -->
                 <h2 style="font-size:18px; font-weight:bold; color:black;">
                     {{ $task->title }}
                 </h2>
 
-                <!-- DESCRIPTION -->
                 <p style="color:#444; margin-bottom:8px;">
                     {{ $task->description }}
                 </p>
 
-                <!-- BADGES -->
                 <div style="margin-bottom:10px;">
 
-                    <!-- PRIORITY (ENUM FIX) -->
+                    <!-- PRIORITY -->
                     @if($task->priority->value == 'high')
                         <span style="background:red; color:white; padding:4px 8px; border-radius:6px;">HIGH</span>
                     @elseif($task->priority->value == 'medium')
@@ -69,14 +70,17 @@
                         <span style="background:green; color:white; padding:4px 8px; border-radius:6px;">LOW</span>
                     @endif
 
-                    <!-- STATUS (ENUM FIX) -->
-                    <span style="margin-left:10px; color:black; font-weight:bold;">
-                        {{ strtoupper($task->status->value) }}
-                    </span>
+                    <!-- STATUS -->
+                    @if($task->status->value == 'todo')
+                        <span style="background:gray; color:white; padding:4px 8px; border-radius:6px; margin-left:10px;">TODO</span>
+                    @elseif($task->status->value == 'in_progress')
+                        <span style="background:blue; color:white; padding:4px 8px; border-radius:6px; margin-left:10px;">IN PROGRESS</span>
+                    @elseif($task->status->value == 'done')
+                        <span style="background:green; color:white; padding:4px 8px; border-radius:6px; margin-left:10px;">DONE</span>
+                    @endif
 
                 </div>
 
-                <!-- ACTIONS -->
                 <div style="display:flex; gap:10px;">
 
                     <a href="/tasks/{{ $task->id }}/edit"
@@ -97,6 +101,11 @@
 
             </div>
         @endforeach
+
+        <!-- PAGINATION -->
+        <div style="margin-top:20px;">
+            {{ $tasks->links() }}
+        </div>
 
     </div>
 </x-app-layout>
