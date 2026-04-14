@@ -11,6 +11,7 @@
             </a>
         </div>
 
+        <!-- 🔍 SEARCH + FILTER -->
         <form method="GET" action="/tasks"
               style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
 
@@ -59,18 +60,18 @@
                 <!-- BADGES -->
                 <div style="margin-bottom:10px;">
 
-                    <!-- PRIORITY -->
-                    @if($task->priority == 'high')
+                    <!-- PRIORITY (ENUM FIX) -->
+                    @if($task->priority->value == 'high')
                         <span style="background:red; color:white; padding:4px 8px; border-radius:6px;">HIGH</span>
-                    @elseif($task->priority == 'medium')
+                    @elseif($task->priority->value == 'medium')
                         <span style="background:orange; color:black; padding:4px 8px; border-radius:6px;">MEDIUM</span>
-                    @elseif($task->priority == 'low')
+                    @elseif($task->priority->value == 'low')
                         <span style="background:green; color:white; padding:4px 8px; border-radius:6px;">LOW</span>
                     @endif
 
-                    <!-- STATUS -->
+                    <!-- STATUS (ENUM FIX) -->
                     <span style="margin-left:10px; color:black; font-weight:bold;">
-                        {{ strtoupper($task->status) }}
+                        {{ strtoupper($task->status->value) }}
                     </span>
 
                 </div>
@@ -78,13 +79,11 @@
                 <!-- ACTIONS -->
                 <div style="display:flex; gap:10px;">
 
-                    <!-- EDIT -->
                     <a href="/tasks/{{ $task->id }}/edit"
                        style="background:#f59e0b; color:white; padding:6px 12px; border-radius:6px; font-weight:bold;">
                         Edit
                     </a>
 
-                    <!-- DELETE -->
                     <form method="POST" action="/tasks/{{ $task->id }}">
                         @csrf
                         @method('DELETE')

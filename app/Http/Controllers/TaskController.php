@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
+// 🔥 ENUMS
+use App\Enums\TaskStatus;
+use App\Enums\TaskPriority;
+
 class TaskController extends Controller
 {
-    // ✅ INDEX WITH FILTER + SEARCH
+    // INDEX WITH FILTER + SEARCH
     public function index(Request $request)
     {
         $query = Task::query();
@@ -47,15 +51,17 @@ class TaskController extends Controller
         $task = new Task();
         $task->title = $request->title;
         $task->description = $request->description;
-        $task->status = 'todo';
-        $task->priority = $request->priority;
+
+        // ENUMS
+        $task->status = TaskStatus::TODO;
+        $task->priority = TaskPriority::from($request->priority);
+
         $task->due_date = $request->due_date;
         $task->estimated_hours = $request->estimated_hours;
         $task->user_id = auth()->id();
 
         $task->save();
 
-        // Assign user ако има избрано
         if ($request->user_id) {
             $task->users()->attach($request->user_id);
         }
@@ -77,14 +83,19 @@ class TaskController extends Controller
 
         $task->title = $request->title;
         $task->description = $request->description;
-        $task->status = $request->status ?? 'todo';
-        $task->priority = $request->priority;
+
+        // ENUMS
+        $task->status = $request->status 
+            ? TaskStatus::from($request->status) 
+            : TaskStatus::TODO;
+
+        $task->priority = TaskPriority::from($request->priority);
+
         $task->due_date = $request->due_date;
         $task->estimated_hours = $request->estimated_hours;
 
         $task->save();
 
-        // Update assign user
         if ($request->user_id) {
             $task->users()->sync([$request->user_id]);
         }
